@@ -5,6 +5,8 @@
 {% from "common/json.njk" import json %}
 {% extends "layout/layout.njk" %}
 
+{% set isTestData = not account.live %}
+
 {% block main %}
   {% if account.disabled %}
     {% set accountDisabledBannerHtml %}
