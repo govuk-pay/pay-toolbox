@@ -236,6 +236,7 @@
           </dd>
         </div>
       {% endif %}
+      {% if account.live %}
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Switching PSP</span></dt>
         <dd class="govuk-summary-list__value">{{ 'Enabled' if account.provider_switch_enabled else 'Disabled' }}</dd>
@@ -243,6 +244,7 @@
           <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/switch_psp">Manage<span class="govuk-visually-hidden"> PSP switching</span></a>
         </dd>
       </div>
+      {% endif %}
     </dl>
   </div>
 </div>

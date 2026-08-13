@@ -5,8 +5,6 @@
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% extends "layout/layout.njk" %}
 
-{% set isTestData = not account.live %}
-
 {% block main %}
   <span class="govuk-caption-m">{{ service.service_name and service.service_name.en }} ({{ account.payment_provider | capitalize }})
   <h1 class="govuk-heading-m">Set up provider switching</h1>
@@ -64,7 +62,8 @@
       },
       items: [
         { value: "worldpay", text: "Worldpay", hint: { text: "Government Banking’s provider. The service needs an agreement with Government Banking to use their contract." } },
-        { value: "stripe", text: "Stripe", hint: { text: "GOV.UK Pay’s provider." }, conditional: { html: statementDescriptorHtml } if not isTestData }
+        { value: "stripe", text: "Stripe", hint: { text: "GOV.UK Pay’s provider." }, conditional: { html: statementDescriptorHtml } },
+        { value: "adyen", text: "Adyen", hint: { text: "GOV.UK Pay’s provider." } }
       ]
     }) }}
 
