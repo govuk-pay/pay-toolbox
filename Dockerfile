@@ -1,32 +1,42 @@
-FROM node:22.23.2-alpine@sha256:c610fcdfb1d5b4740dd70c284ed3cb16bb857e0f7166196e36a5501df7a3aa32
+FROM node:22.23.2-alpine@sha256:c610fcdfb1d5b4740dd70c284ed3cb16bb857e0f7166196e36a5501df7a3aa32 AS base
 
-RUN apk -U upgrade --available
-WORKDIR /app
+RUN apk upgrade --no-cache
+
+FROM base AS builder
 
 # Upgrade npm — if updating the Node.js version, check if this
 # is still necessary and make sure it never downgrades npm
 RUN npm install -g npm@11.18.0
 
-# takes both package and package-lock for CI
-COPY package*.json ./
-
-# prepare build process modules
-RUN npm ci --no-progress
-
-# ideally command is COPY scr/ scripts/ tsconfig.json ./
-# COPY flattens file structures so this is not possible inline right now
-# ref: https://github.com/moby/moby/issues/15858
-COPY src/ src
-COPY scripts/ scripts
-COPY tsconfig.json tsconfig.json
+WORKDIR /build-stage
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --quiet
+COPY . ./
 
 # questionable method of setting build defaults - this should be removed when
 # tunneling is no longer required
 RUN node ./scripts/generate-dev-environment.js docker
 
 RUN npm run build
-RUN npm prune --production
+RUN npm prune --omit=dev
+
+FROM base AS final
+
+WORKDIR /app
+COPY --from=builder /build-stage/node_modules ./node_modules
+COPY --from=builder /build-stage/dist ./dist
+COPY --from=builder /build-stage/.env ./
+
+RUN apk add --no-cache tini \
+    && rm -rf /usr/local/lib/node_modules/npm \
+        /usr/local/lib/node_modules/corepack \
+        /usr/local/bin/npm \
+        /usr/local/bin/npx \
+        /usr/local/bin/corepack \
+        /opt/yarn-* \
+        /usr/local/bin/yarn \
+        /usr/local/bin/yarnpkg
 
 EXPOSE 3000
-
-CMD [ "npm", "start" ]
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "dist/index.js"]
