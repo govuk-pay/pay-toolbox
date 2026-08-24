@@ -47,7 +47,7 @@
     "express": "^5.2.1",
     "fast-csv": "^4.3.6",
     "google-libphonenumber": "~3.2.21",
-    "govuk-frontend": "^5.10.2",
+    "govuk-frontend": "^6.0.0",
     "helmet": "^7.0.0",
     "http-errors": "^2.0.0",
     "https-proxy-agent": "5.0.1",
@@ -62,7 +62,7 @@
     "passport-github2": "^0.1.12",
     "qs": "6.15.2",
     "rfc822-validate": "^1.0.0",
-    "sass": "^1.62.1",
+    "sass": "^1.101.0",
     "stripe": "^8.174.0",
     "undici": "^7.29.0",
     "winston": "^3.10.0"
