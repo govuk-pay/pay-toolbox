@@ -87,7 +87,7 @@ function configureServingPublicStaticFiles(instance) {
   const cache = { maxage: '1y' }
   instance.use('/public', express.static(path.join(__dirname, '../public'), cache))
   instance.use('/assets/fonts', express.static(path.join(process.cwd(), 'node_modules/govuk-frontend/dist/govuk/assets/fonts'), cache))
-  instance.use('/rebrand/images/favicon.ico', express.static(path.join(process.cwd(), 'node_modules/govuk-frontend/dist/govuk/assets/rebrand/images/', 'favicon.ico'), cache))
+  instance.use('/images/favicon.ico', express.static(path.join(process.cwd(), 'node_modules/govuk-frontend/dist/govuk/assets/images/', 'favicon.ico'), cache))
   instance.use('/javascripts/govuk-frontend.js', express.static(path.join(process.cwd(), 'node_modules/govuk-frontend/dist/govuk/all.bundle.js'), cache))
   instance.use('/assets/logos', express.static(path.join(process.cwd(), 'src/assets/logos'), cache))
 }

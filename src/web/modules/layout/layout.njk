@@ -1,24 +1,26 @@
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
 
 <!DOCTYPE html>
-<html lang="en" class="govuk-template govuk-template--rebranded">
+<html lang="en" class="govuk-template">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Toolbox</title>
   <link rel="stylesheet" href="{{ manifest['payuk-toolbox.css'] }}">
-  <link rel="shortcut icon" href="/rebrand/images/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 </html>
 
 <body class="govuk-template__body js-enabled">
   {{ govukHeader({
     homepageUrl: "/",
-    serviceName: "Toolbox",
-    productName: "Pay",
-    useTudorCrown: true,
-    rebrand: true
+    productName: "Pay"
+  }) }}
+
+  {{ govukServiceNavigation({
+    serviceName: "Toolbox"
   }) }}
 
   <div class="govuk-width-container">
