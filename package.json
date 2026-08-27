@@ -24,10 +24,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alphagov/pay-toolbox.git"
+    "url": "git+https://github.com/govuk-pay/pay-toolbox.git"
   },
   "license": "MIT",
-  "homepage": "https://github.com/alphagov/pay-toolbox#readme",
+  "homepage": "https://github.com/govuk-pay/pay-toolbox#readme",
   "dependencies": {
     "@aws-sdk/client-ecs": "~3.975.0",
     "@aws-sdk/client-s3": "~3.1027.0",
