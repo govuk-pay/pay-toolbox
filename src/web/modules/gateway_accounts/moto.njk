@@ -84,7 +84,7 @@
   {% if account.allow_telephone_payment_notifications === false %}
     <div>
       <h2 class="govuk-heading-s">Telephone payment notifications are disabled</h2>
-      <p class="govuk-body">Allows use of the <a class="govuk-link govuk-link--no-visited-state" href="https://github.com/alphagov/pay-telephone-payments">API to store records of telephone payments</a> which were taken outside of GOV.UK Pay.</p>
+      <p class="govuk-body">Allows use of the <a class="govuk-link govuk-link--no-visited-state" href="https://github.com/govuk-pay/pay-telephone-payments">API to store records of telephone payments</a> which were taken outside of GOV.UK Pay.</p>
       <p class="govuk-body">It should be ensured that the gateway account is only used for this purpose by the service and they have a separate service if they take payments using our payment pages.</p>
       <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/toggle_allow_telephone_payment_notifications">
         {{ govukButton({
@@ -100,7 +100,7 @@
   {% if account.allow_telephone_payment_notifications === true %}
     <div>
       <h2 class="govuk-heading-s">Telephone payment notifications are enabled</h2>
-      <p class="govuk-body">Use of the <a class="govuk-link govuk-link--no-visited-state" href="https://github.com/alphagov/pay-telephone-payments">telephone payment notifications API</a> is enabled for this account. This is used to store records of telephone payments which were taken outside of GOV.UK Pay.</p>
+      <p class="govuk-body">Use of the <a class="govuk-link govuk-link--no-visited-state" href="https://github.com/govuk-pay/pay-telephone-payments">telephone payment notifications API</a> is enabled for this account. This is used to store records of telephone payments which were taken outside of GOV.UK Pay.</p>
       <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/toggle_allow_telephone_payment_notifications">
         {{ govukButton({
           text: "Disable telephone payment notifications"

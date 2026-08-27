@@ -2,7 +2,7 @@
 
 Internal administrative tools service for GOV.UK Pay products.
 
-[![Known Vulnerabilities](https://snyk.io//test/github/alphagov/pay-toolbox/badge.svg?targetFile=package.json)](https://snyk.io//test/github/alphagov/pay-toolbox?targetFile=package.json)
+[![Known Vulnerabilities](https://snyk.io//test/github/govuk-pay/pay-toolbox/badge.svg?targetFile=package.json)](https://snyk.io//test/github/govuk-pay/pay-toolbox?targetFile=package.json)
 
 ## Running in a support role
 
