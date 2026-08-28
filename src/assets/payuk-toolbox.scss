@@ -56,7 +56,7 @@
 
 .user-profile__container {
   @include govuk-font($size: 16);
-  @include govuk-functional-colour(text);
+  @include govuk-text-colour;
 
   display: flex;
   flex-direction: row;
