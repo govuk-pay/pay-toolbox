@@ -14,14 +14,16 @@
 </html>
 
 <body class="govuk-template__body js-enabled">
-  {{ govukHeader({
-    homepageUrl: "/",
-    productName: "Pay"
-  }) }}
+  <header class="govuk-template__header">
+    {{ govukHeader({
+      homepageUrl: "/",
+      productName: "Pay"
+    }) }}
 
-  {{ govukServiceNavigation({
-    serviceName: "Toolbox"
-  }) }}
+    {{ govukServiceNavigation({
+      serviceName: "Toolbox"
+    }) }}
+  </header>
 
   <div class="govuk-width-container">
     {% include "layout/user_banner.njk" %}
