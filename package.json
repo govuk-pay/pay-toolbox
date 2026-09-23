@@ -19,7 +19,7 @@
     "build": "scripts/build && npm run build:typescript && npm run build:copy && npm run build:sass",
     "build:typescript": "tsc",
     "build:sass": "scripts/compile-assets",
-    "build:copy": "copyfiles --up 1 src/**/*.njk dist/",
+    "build:copy": "copyfiles --up 1 src/**/*.njk src/assets/**/*.png dist/",
     "version": "echo $npm_package_version"
   },
   "repository": {
