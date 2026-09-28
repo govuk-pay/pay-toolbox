@@ -30,7 +30,37 @@
     </div>
   </div>
 
-  <h1 class="govuk-heading-m">Confirm refund</h1>
+  <h1 class="govuk-heading-m">Correct asynchronously failed Stripe refund</h1>
+
+  <p class="govuk-body">
+    This will:
+  </p>
+
+  <ul class="govuk-list govuk-list--bullet">
+    <li>
+      make a new transfer in Stripe to move the refunded amount from the GOV.UK Pay account back to the service’s account
+    </li>
+    <li>
+      insert a new payment representing the transfer in ledger
+    </li>
+    <li>
+      update the refund status to error in Pay
+    </li>
+  </ul>
+
+  <p class="govuk-body">
+    This will not:
+  </p>
+
+   <ul class="govuk-list govuk-list--bullet">
+    <li>
+      change the refund availability of the original payment (because it many cases failed refunds cannot be retried)
+    </li>
+  </ul>
+
+  <p class="govuk-body">
+    This can also be used to fix a cancelled Stripe refund but you will need to then update the refund availability of the original payment.
+  </p>
 
   <form method="post" action="/confirm-fix-async-failed-stripe-refund/{{ transaction.transaction_id }}">
 
@@ -41,12 +71,14 @@
       autocomplete: "off"
     }) }}
 
+  <p class="govuk-body">
+    Make sure the refund has been expunged from connector before pressing the button.
+  </p>
+
     <input type="hidden" name="_csrf" value="{{ csrf }}">
     {{ govukButton({
-      text: "Correct asynchronously failed Stripe refund "
+      text: "Correct asynchronously failed Stripe refund"
     }) }}
-
-
 
   </form>
 {% endblock %}

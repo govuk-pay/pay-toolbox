@@ -122,6 +122,9 @@
       classes: "govuk-button--warning",
       href: "/confirm-fix-async-failed-stripe-refund/" + transaction.transaction_id
     }) }}
+    <p class="govuk-body">
+      This can also be used to fix a cancelled Stripe refund but you will need to then update the refund availability of the original payment.
+    </p>
   {% endif %}
   {% if (transaction.state and transaction.state.status === "success") and (parentTransaction.payment_provider === "stripe") and not isExpunged %}
     <div class="govuk-body govuk-!-margin-bottom-4">
