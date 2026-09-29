@@ -55,7 +55,7 @@
     "json2csv": "^5.0.7",
     "lodash": "4.18.1",
     "moment": "^2.29.4",
-    "morgan": "^1.12.0",
+    "morgan": "^1.12.1",
     "multer": "2.4.0",
     "nunjucks": "3.2.4",
     "passport": "~0.7.0",
@@ -64,7 +64,7 @@
     "rfc822-validate": "^1.0.0",
     "sass": "^1.101.0",
     "stripe": "^8.174.0",
-    "undici": "^7.29.0",
+    "undici": "^7.29.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {
