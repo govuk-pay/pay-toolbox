@@ -56,7 +56,7 @@
     "lodash": "4.18.1",
     "moment": "^2.29.4",
     "morgan": "^1.12.0",
-    "multer": "2.3.0",
+    "multer": "2.4.0",
     "nunjucks": "3.2.4",
     "passport": "~0.7.0",
     "passport-github2": "^0.1.12",
