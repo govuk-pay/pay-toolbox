@@ -14,7 +14,7 @@
     "lint": "eslint \"src/**/*.{js,ts,tsx}\"",
     "lint-sass": "stylelint '**/*.scss'",
     "test": "npm run test:unit",
-    "test:unit": "AUTH_GITHUB_ENABLED=true mocha -r ts-node/register -r dotenv/config --recursive \"./src/**/*.spec.{js,ts}\" dotenv_config_path=src/tests/.env --exit",
+    "test:unit": "AUTH_GITHUB_ENABLED=true DOTENV_CONFIG_PATH=src/tests/.env mocha -r ts-node/register -r dotenv/config --recursive \"./src/**/*.spec.{js,ts}\" --exit",
     "compile": "npm run build",
     "build": "scripts/build && npm run build:typescript && npm run build:copy && npm run build:sass",
     "build:typescript": "tsc",
