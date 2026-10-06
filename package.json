@@ -91,7 +91,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^17.1.0",
-    "mocha": "^10.2.0",
+    "mocha": "^12.0.3",
     "nock": "^14.0.17",
     "proxyquire": "^2.1.3",
     "sinon": "^22.0.0",
@@ -115,10 +115,6 @@
     },
     "cross-spawn": "^7.0.5",
     "axios": "1.20.0",
-    "mocha": {
-      "brace-expansion": "^2.1.2",
-      "serialize-javascript": "7.0.7"
-    },
     "typescript-eslint": {
       "brace-expansion": "^2.1.2"
     },
