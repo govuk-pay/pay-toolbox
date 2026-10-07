@@ -93,10 +93,11 @@ describe('search', () => {
 
         describe('transaction is not found by ID', () => {
 
+            const retrieveStub = sinon.fake.throws(
+                new EntityNotFoundError('Transaction does not exist', "an-identifier"))
+
             it('should search for transactions by reference', () => {
-                const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
-                const retrieveSpy = sinon.fake.throws(entityNotFoundError)
-                sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+                sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
                 const listSpy = sinon.fake();
                 sinon.replace(Ledger.transactions, 'list', listSpy)
                 const request = requestWithId(id)
@@ -107,9 +108,7 @@ describe('search', () => {
             })
 
             it('should redirect to transaction view by reference if multiple transactions are found by reference', async () => {
-                const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
-                const retrieveSpy = sinon.fake.throws(entityNotFoundError)
-                sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+                sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
                 givenLedgerSearchWillReturnResults({}, {})
                 const request = requestWithId(id)
 
@@ -119,9 +118,7 @@ describe('search', () => {
             })
 
             it('should redirect to single transaction view by transaction ID if only one transaction is found by reference', async () => {
-                const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
-                const retrieveSpy = sinon.fake.throws(entityNotFoundError)
-                sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+                sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
                 givenLedgerSearchWillReturnResults({transaction_id: "transaction-ID"})
                 const request = requestWithId(id)
 
@@ -131,7 +128,17 @@ describe('search', () => {
             })
 
             describe('transaction is not found by reference', () => {
-                it('should search for transactions by gateway transaction ID')
+                it('should search for transactions by gateway transaction ID', async () => {
+                    sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
+                    const listSpy = sinon.fake.resolves({results: []});
+                    sinon.replace(Ledger.transactions, 'list', listSpy)
+                    const request = requestWithId(id)
+
+                    await search(request, response, () => {
+                    })
+
+                    sinon.assert.calledWithMatch(listSpy, {gateway_transaction_id: id})
+                })
 
                 it('should redirect to transaction view by gateway transaction ID if multiple transactions are found')
 
