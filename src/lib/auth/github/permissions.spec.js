@@ -1,4 +1,4 @@
-const nock = require('nock')
+const { default: nock } = require('nock')
 const proxyquire = require('proxyquire')
 const {expect} = require('chai')
 
