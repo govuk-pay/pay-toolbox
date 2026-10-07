@@ -4,18 +4,18 @@ import sinon from "sinon";
 import {Ledger} from "../../../lib/pay-request/client";
 
 describe('search', () => {
+    let redirect: sinon.SinonSpy;
+
+    beforeEach(() => {
+        redirect = sinon.fake()
+    })
+
+    afterEach(() => {
+        sinon.restore();
+    })
+
     describe('id is an email', () => {
         const emailId = 'test@test.com'
-
-        let redirect: sinon.SinonSpy;
-
-        beforeEach(() => {
-            redirect = sinon.fake()
-        })
-
-        afterEach(() => {
-            sinon.restore();
-        })
 
         it('should search for transactions by email', () => {
             const listSpy = sinon.fake();
@@ -47,6 +47,21 @@ describe('search', () => {
             await search(request, response, undefined)
 
             sinon.assert.calledOnceWithExactly(redirect, "/transactions/transaction-ID")
+        })
+    })
+
+    describe('id is not an email', () => {
+        const id = "some-id"
+
+        it('should get transaction by id', () => {
+            const retrieveSpy = sinon.fake()
+            sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+            const request = {body: {id}} as Request;
+            const response = {redirect} as unknown as Response;
+
+            search(request, response, undefined)
+
+            sinon.assert.calledOnceWithExactly(retrieveSpy, id)
         })
     })
 })
