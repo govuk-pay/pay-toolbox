@@ -140,7 +140,18 @@ describe('search', () => {
                     sinon.assert.calledWithMatch(listSpy, {gateway_transaction_id: id})
                 })
 
-                it('should redirect to transaction view by gateway transaction ID if multiple transactions are found')
+                it('should redirect to transaction view by gateway transaction ID if multiple transactions are found', async () => {
+                    sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
+                    const listStub = sinon.stub()
+                    sinon.replace(Ledger.transactions, 'list', listStub)
+                    listStub.onFirstCall().resolves({results: []});
+                    listStub.onSecondCall().resolves({results: [{}, {}]});
+                    const request = requestWithId(id)
+
+                    await search(request, response, undefined)
+
+                    sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions?gateway_transaction_id=${id}`)
+                })
 
                 it('should redirect to single transaction view by transaction ID if only one transaction is found by gateway transaction ID')
 
