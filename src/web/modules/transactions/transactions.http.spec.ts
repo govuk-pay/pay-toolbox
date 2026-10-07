@@ -54,6 +54,18 @@ describe('search', () => {
 
             sinon.assert.calledOnceWithExactly(redirectSpy, "/transactions/transaction-ID")
         })
+
+        it('should call the next function with the thrown error if an error is thrown by Ledger "list" operation', () => {
+            const error = new Error('error');
+            const listStub = sinon.fake.throws(error);
+            sinon.replace(Ledger.transactions, 'list', listStub)
+            const request = requestWithId(emailId)
+            const nextFunctionSpy = sinon.spy()
+
+            search(request, response, nextFunctionSpy)
+
+            sinon.assert.calledOnceWithExactly(nextFunctionSpy, error)
+        })
     })
 
     describe('id is not an email', () => {
@@ -76,6 +88,18 @@ describe('search', () => {
             await search(request, response, undefined)
 
             sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions/${id}`)
+        })
+
+        describe('transaction is not found by ID', () => {
+            // EntityNotFoundError is thrown from Ledger.transactions.retrieve
+
+            // search by reference
+            //     multiple results are returned - redirects to transactions by reference
+            //     one result is returned - redirects to transaction view by ID for result
+            // search by gateway transaction ID if not found by reference
+            //     multiple results are returned - redirects to transactions by gateway transaction id
+            //     one result is returned - redirects to transaction view by ID for result
+            // calls next function with EntityNotFoundError if search by reference and gateway transaction ID return no results
         })
     })
 })
