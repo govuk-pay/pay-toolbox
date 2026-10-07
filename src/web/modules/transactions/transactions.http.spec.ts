@@ -166,7 +166,23 @@ describe('search', () => {
                     sinon.assert.calledOnceWithExactly(redirectSpy, '/transactions/transaction-ID')
                 })
 
-                it('should call the next function with an EntityNotFoundError if transaction is not found by gateway transaction ID')
+                it('should call the next function with an EntityNotFoundError if transaction is not found by gateway transaction ID', async () => {
+                    sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
+                    const listStub = sinon.stub()
+                    sinon.replace(Ledger.transactions, 'list', listStub)
+                    listStub.onFirstCall().resolves({results: []});
+                    listStub.onSecondCall().resolves({results: []})
+                    const request = requestWithId(id)
+                    const nextFunctionSpy = sinon.fake()
+
+                    await search(request, response, nextFunctionSpy)
+
+                    sinon.assert.calledOnceWithMatch(
+                        nextFunctionSpy,
+                        sinon.match.instanceOf(EntityNotFoundError)
+                            .and(sinon.match.has(
+                                'message', 'Transaction search with criteria  with ID some-id was not found.')))
+                })
             })
         })
     })
