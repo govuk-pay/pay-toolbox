@@ -12,12 +12,12 @@ function givenLedgerSearchWillReturnResults(...results: any[]) {
 }
 
 describe('search', () => {
-    let redirect: sinon.SinonSpy;
+    let redirectSpy: sinon.SinonSpy;
     let response: Response;
 
     beforeEach(() => {
-        redirect = sinon.fake()
-        response = {redirect} as unknown as Response
+        redirectSpy = sinon.fake()
+        response = {redirect: redirectSpy} as unknown as Response
     })
 
     afterEach(() => {
@@ -43,7 +43,7 @@ describe('search', () => {
 
             await search(request, response, undefined)
 
-            sinon.assert.calledOnceWithExactly(redirect, "/transactions?email=test@test.com")
+            sinon.assert.calledOnceWithExactly(redirectSpy, "/transactions?email=test@test.com")
         })
 
         it('should redirect to single transaction view by transaction ID if only one transaction is found', async () => {
@@ -52,7 +52,7 @@ describe('search', () => {
 
             await search(request, response, undefined)
 
-            sinon.assert.calledOnceWithExactly(redirect, "/transactions/transaction-ID")
+            sinon.assert.calledOnceWithExactly(redirectSpy, "/transactions/transaction-ID")
         })
     })
 
