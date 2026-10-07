@@ -5,9 +5,11 @@ import {Ledger} from "../../../lib/pay-request/client";
 
 describe('search', () => {
     let redirect: sinon.SinonSpy;
+    let response: Response;
 
     beforeEach(() => {
         redirect = sinon.fake()
+        response = {redirect} as unknown as Response
     })
 
     afterEach(() => {
@@ -21,7 +23,6 @@ describe('search', () => {
             const listSpy = sinon.fake();
             sinon.replace(Ledger.transactions, 'list', listSpy)
             const request = {body: {id: emailId}} as Request;
-            const response = {redirect} as unknown as Response;
 
             search(request, response, undefined)
 
@@ -31,7 +32,6 @@ describe('search', () => {
         it('should redirect to transaction view by email if multiple transactions are found', async () => {
             sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results: [{}, {}]}))
             const request = {body: {id: emailId}} as Request;
-            const response = {redirect} as unknown as Response;
 
             await search(request, response, undefined)
 
@@ -42,7 +42,6 @@ describe('search', () => {
             const results = [{transaction_id: "transaction-ID"}];
             sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results: results}))
             const request = {body: {id: emailId}} as Request;
-            const response = {redirect} as unknown as Response;
 
             await search(request, response, undefined)
 
@@ -57,7 +56,6 @@ describe('search', () => {
             const retrieveSpy = sinon.fake()
             sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
             const request = {body: {id}} as Request;
-            const response = {redirect} as unknown as Response;
 
             search(request, response, undefined)
 
