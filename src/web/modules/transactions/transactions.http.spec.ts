@@ -153,7 +153,18 @@ describe('search', () => {
                     sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions?gateway_transaction_id=${id}`)
                 })
 
-                it('should redirect to single transaction view by transaction ID if only one transaction is found by gateway transaction ID')
+                it('should redirect to single transaction view by transaction ID if only one transaction is found by gateway transaction ID', async () => {
+                    sinon.replace(Ledger.transactions, 'retrieve', retrieveStub)
+                    const listStub = sinon.stub()
+                    sinon.replace(Ledger.transactions, 'list', listStub)
+                    listStub.onFirstCall().resolves({results: []});
+                    listStub.onSecondCall().resolves({results: [{transaction_id: "transaction-ID"}]})
+                    const request = requestWithId(id)
+
+                    await search(request, response, undefined)
+
+                    sinon.assert.calledOnceWithExactly(redirectSpy, '/transactions/transaction-ID')
+                })
 
                 it('should call the next function with an EntityNotFoundError if transaction is not found by gateway transaction ID')
             })
