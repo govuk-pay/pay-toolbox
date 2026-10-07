@@ -7,6 +7,10 @@ function requestWithId(emailId: string) {
     return {body: {id: emailId}} as Request;
 }
 
+function givenLedgerSearchWillReturnResults(...results: any[]) {
+    sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results}))
+}
+
 describe('search', () => {
     let redirect: sinon.SinonSpy;
     let response: Response;
@@ -34,7 +38,7 @@ describe('search', () => {
         })
 
         it('should redirect to transaction view by email if multiple transactions are found', async () => {
-            sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results: [{}, {}]}))
+            givenLedgerSearchWillReturnResults({}, {});
             const request = requestWithId(emailId)
 
             await search(request, response, undefined)
@@ -43,8 +47,7 @@ describe('search', () => {
         })
 
         it('should redirect to single transaction view by transaction ID if only one transaction is found', async () => {
-            const results = [{transaction_id: "transaction-ID"}];
-            sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results: results}))
+            givenLedgerSearchWillReturnResults({transaction_id: "transaction-ID"})
             const request = requestWithId(emailId)
 
             await search(request, response, undefined)
