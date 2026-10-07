@@ -2,6 +2,7 @@ import {search} from "./transactions.http";
 import {Request, Response} from "express";
 import sinon from "sinon";
 import {Ledger} from "../../../lib/pay-request/client";
+import {EntityNotFoundError} from "../../../lib/errors";
 
 function requestWithId(emailId: string) {
     return {body: {id: emailId}} as Request;
@@ -91,15 +92,33 @@ describe('search', () => {
         })
 
         describe('transaction is not found by ID', () => {
-            // EntityNotFoundError is thrown from Ledger.transactions.retrieve
 
-            // search by reference
-            //     multiple results are returned - redirects to transactions by reference
-            //     one result is returned - redirects to transaction view by ID for result
-            // search by gateway transaction ID if not found by reference
-            //     multiple results are returned - redirects to transactions by gateway transaction id
-            //     one result is returned - redirects to transaction view by ID for result
-            // calls next function with EntityNotFoundError if search by reference and gateway transaction ID return no results
+            it('should search for transactions by reference', () => {
+                const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
+                const retrieveSpy = sinon.fake.throws(entityNotFoundError)
+                sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+                const listSpy = sinon.fake();
+                sinon.replace(Ledger.transactions, 'list', listSpy)
+                const request = requestWithId(id)
+
+                search(request, response, undefined)
+
+                sinon.assert.calledOnceWithMatch(listSpy, {reference: id})
+            })
+
+            it('should redirect to transaction view by reference if multiple transactions are found')
+
+            it('should redirect to single transaction view by transaction ID if only one transaction is found by reference')
+
+            describe('transaction is not found by reference', () => {
+                it('should search for transactions by gateway transaction ID')
+
+                it('should redirect to transaction view by gateway transaction ID if multiple transactions are found')
+
+                it('should redirect to single transaction view by transaction ID if only one transaction is found by gateway transaction ID')
+
+                it('should call the next function with an EntityNotFoundError if transaction is not found by gateway transaction ID')
+            })
         })
     })
 })
