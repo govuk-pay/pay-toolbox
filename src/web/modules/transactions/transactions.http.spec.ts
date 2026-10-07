@@ -106,7 +106,7 @@ describe('search', () => {
                 sinon.assert.calledOnceWithMatch(listSpy, {reference: id})
             })
 
-            it('should redirect to transaction view by reference if multiple transactions are found', async () => {
+            it('should redirect to transaction view by reference if multiple transactions are found by reference', async () => {
                 const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
                 const retrieveSpy = sinon.fake.throws(entityNotFoundError)
                 sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
@@ -118,7 +118,17 @@ describe('search', () => {
                 sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions?reference=${id}`)
             })
 
-            it('should redirect to single transaction view by transaction ID if only one transaction is found by reference')
+            it('should redirect to single transaction view by transaction ID if only one transaction is found by reference', async () => {
+                const entityNotFoundError = new EntityNotFoundError('Transaction does not exist', "an-identifier");
+                const retrieveSpy = sinon.fake.throws(entityNotFoundError)
+                sinon.replace(Ledger.transactions, 'retrieve', retrieveSpy)
+                givenLedgerSearchWillReturnResults({transaction_id: "transaction-ID"})
+                const request = requestWithId(id)
+
+                await search(request, response, undefined)
+
+                sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions/transaction-ID`)
+            })
 
             describe('transaction is not found by reference', () => {
                 it('should search for transactions by gateway transaction ID')
