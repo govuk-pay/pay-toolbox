@@ -133,9 +133,9 @@ describe('search', () => {
                     const listSpy = sinon.fake.resolves({results: []});
                     sinon.replace(Ledger.transactions, 'list', listSpy)
                     const request = requestWithId(id)
+                    const noopNext = sinon.spy();
 
-                    await search(request, response, () => {
-                    })
+                    await search(request, response, noopNext)
 
                     sinon.assert.calledWithMatch(listSpy, {gateway_transaction_id: id})
                 })
