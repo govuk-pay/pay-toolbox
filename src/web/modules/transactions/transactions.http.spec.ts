@@ -68,5 +68,14 @@ describe('search', () => {
 
             sinon.assert.calledOnceWithExactly(retrieveSpy, id)
         })
+
+        it('should redirect to single transaction view by transaction ID', async () => {
+            sinon.replace(Ledger.transactions, 'retrieve', sinon.fake.resolves({}))
+            const request = requestWithId(id)
+
+            await search(request, response, undefined)
+
+            sinon.assert.calledOnceWithExactly(redirectSpy, `/transactions/${id}`)
+        })
     })
 })
