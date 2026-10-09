@@ -24,7 +24,13 @@
     <span class="govuk-body-l status-amount">{{ (transaction.total_amount or transaction.amount) | currency }}</span>
   </div>
   <div class="govuk-grid-column-three-quarters text-right">
-{#    TODO: add expunged status tag back in when bug with checking expunged state is fixed #}
+{{ govukTag({
+      text: "Expunged",
+      classes: "govuk-tag--magenta"
+    }) if isExpunged else govukTag({
+      text: "Not expunged",
+      classes: "govuk-tag--purple"
+    }) }}
   </div>
 </div>
 
