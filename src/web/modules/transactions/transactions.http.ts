@@ -167,16 +167,25 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
     const relatedTransactions = []
     let stripeDashboardUri = ''
 
-    let connectorTransaction
-    if (transaction.transaction_type === TransactionType.Payment) {
-      connectorTransaction = await Connector.charges.retrieve(req.params.id)
-        .catch(ifEntityNotFound((): null => null));
-    } else if (transaction.transaction_type === TransactionType.Refund) {
-      connectorTransaction = await Connector.refunds.retrieve(transaction.parent_transaction_id, req.params.id, transaction.gateway_account_id)
-        .catch(ifEntityNotFound((): null => null));
-    } else if (transaction.transaction_type === TransactionType.Dispute) {
-      connectorTransaction = null // Disputes are never stored in Connector
+    const checkTransactionExistsInConnector = async (type: TransactionType, id: string): Promise<boolean> => {
+      switch (type) {
+        case TransactionType.Payment: {
+          const charge = await Connector.charges.retrieve(id)
+            .catch(ifEntityNotFound((): null => null))
+          return Boolean(charge)
+        }
+        case TransactionType.Refund: {
+          const refundResponse = await Connector.refunds.exists(id)
+            .catch(ifEntityNotFound((): null => null))
+          return Boolean(refundResponse)
+        }
+        case TransactionType.Dispute:
+        default:
+          return false // Disputes are never stored in Connector
+      }
     }
+
+    const existsInConnector = await checkTransactionExistsInConnector(transaction.transaction_type, req.params.id)
 
     const transactionEvents = await Ledger.transactions.listEvents(transaction.transaction_id, {
       gateway_account_id: transaction.gateway_account_id,
@@ -275,7 +284,7 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
           stripeDashboardUri,
           humanReadableSubscriptions: constants.webhooks.humanReadableSubscriptions,
           userJourneyDurationFriendly,
-          isExpunged: !connectorTransaction,
+          isExpunged: !existsInConnector,
           merchantCode
         })
       }
@@ -283,7 +292,7 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
         return res.render(`transactions/refund`, {
           ...context,
           parentTransaction,
-          isExpunged: !connectorTransaction
+          isExpunged: !existsInConnector
         })
       }
       case TransactionType.Dispute: {

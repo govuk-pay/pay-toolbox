@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import Client from '../../base'
-import {mapRequestParamsToOperation} from '../../utils/request'
+import { mapRequestParamsToOperation } from '../../utils/request'
 import {
     AddGatewayAccountCredentialsRequest,
     AddGitHubAndZendeskCredential,
@@ -18,10 +18,10 @@ import {
     UpdateGatewayAccountRequest,
     UpdateStripeSetupRequest
 } from './types'
-import {App} from '../../shared'
-import {handleEntityNotFound, handleChargeNotFoundForParityCheck} from "../../utils/error";
-import {EntityNotFoundError} from '../../../errors'
-import {Refund} from "../ledger/types";
+import { App } from '../../shared'
+import { handleEntityNotFound, handleChargeNotFoundForParityCheck } from "../../utils/error";
+import { EntityNotFoundError } from '../../../errors'
+import { Refund } from "../ledger/types";
 
 /**
  * Convenience methods for accessing resource endpoints for the Connector
@@ -33,11 +33,16 @@ export default class Connector extends Client {
     }
 
     refunds = ((client: Connector) => ({
-        retrieve (chargeExternalId: string, refundExternalId: string, accountId: string): Promise<Charge> {
+        /**
+        * Checks if a refund exists in the Connector, returns just 200 or 404 if missing
+        * @param id - Refund external ID
+        * @returns true if refund exists
+         */
+        exists(id: string): Promise<boolean> {
             return client._axios
-                .get(`/v1/api/accounts/${accountId}/charges/${chargeExternalId}/refunds/${refundExternalId}`)
-                .then(response => client._unpackResponseData<Charge>(response))
-                .catch(handleEntityNotFound(`Refund for charge [${chargeExternalId}]`, refundExternalId))
+                .get(`/v1/api/refunds/${id}`)
+                .then(() => true)
+                .catch(handleEntityNotFound(`Refund`, id))
         },
 
     }))(this)
@@ -168,7 +173,7 @@ export default class Connector extends Client {
         list(filters: ListGatewayAccountsRequest = {}): Promise<ListGatewayAccountsResponse | undefined> {
             const params = _.omitBy(filters, _.isEmpty)
             return client._axios
-                .get('/v1/api/accounts', {params})
+                .get('/v1/api/accounts', { params })
                 .then(response => client._unpackResponseData<ListGatewayAccountsResponse>(response))
         },
 
@@ -177,8 +182,8 @@ export default class Connector extends Client {
          */
         async retrieveForService(filters: ListGatewayAccountsRequest = {}): Promise<GatewayAccount | undefined> {
             const params = _.omitBy(filters, _.isEmpty)
-            const {accounts} = await client._axios
-                .get('/v1/api/accounts', {params})
+            const { accounts } = await client._axios
+                .get('/v1/api/accounts', { params })
                 .then(response => client._unpackResponseData<ListGatewayAccountsResponse>(response))
 
             if (accounts.length > 1) {
@@ -262,7 +267,7 @@ export default class Connector extends Client {
                 do_not_retry_emit_until: retryDelayInSeconds
             }
             return client._axios
-                .post('/v1/tasks/historical-event-emitter', null, {params})
+                .post('/v1/tasks/historical-event-emitter', null, { params })
                 .then(() => {
                     return
                 })
@@ -275,7 +280,7 @@ export default class Connector extends Client {
                 do_not_retry_emit_until: retryDelayInSeconds
             }
             return client._axios
-                .post('/v1/tasks/historical-event-emitter-by-date', null, {params})
+                .post('/v1/tasks/historical-event-emitter-by-date', null, { params })
                 .then(() => {
                     return
                 })
@@ -299,7 +304,7 @@ export default class Connector extends Client {
                 record_type: recordType
             }
             return client._axios
-                .post('/v1/tasks/parity-checker', null, {params})
+                .post('/v1/tasks/parity-checker', null, { params })
                 .then(() => {
                     return
                 })
