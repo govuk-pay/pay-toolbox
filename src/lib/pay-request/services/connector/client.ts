@@ -40,7 +40,7 @@ export default class Connector extends Client {
          */
         exists(id: string): Promise<boolean> {
             return client._axios
-                .get(`/v1/api/refunds/${id}`)
+                .get(`/v1/api/refunds/${encodeURIComponent(id)}`)
                 .then(() => true)
                 .catch(handleEntityNotFound(`Refund`, id))
         },
