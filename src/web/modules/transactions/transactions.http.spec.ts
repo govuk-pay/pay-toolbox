@@ -12,7 +12,7 @@ function givenLedgerSearchWillReturnResults(...results: any[]) {
     sinon.replace(Ledger.transactions, 'list', sinon.fake.resolves({results}))
 }
 
-describe('search', () => {
+describe('Transaction search', () => {
     let redirectSpy: sinon.SinonSpy;
     let response: Response;
 
