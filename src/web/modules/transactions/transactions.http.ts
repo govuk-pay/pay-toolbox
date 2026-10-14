@@ -35,6 +35,8 @@ export async function search(req: Request, res: Response, next: NextFunction): P
 
   try {
     if (isAnEmail(id)) {
+
+
       const emailSearch = await Ledger.transactions.list({
         override_account_id_restriction: true,
         email: id
@@ -42,10 +44,8 @@ export async function search(req: Request, res: Response, next: NextFunction): P
 
       if (emailSearch.results.length > 1) {
         res.redirect(`/transactions?email=${id}`)
-        return
       } else if (emailSearch.results.length === 1) {
         res.redirect(`/transactions/${emailSearch.results[0].transaction_id}`)
-        return
       }
     } else {
       await Ledger.transactions.retrieve(id)
