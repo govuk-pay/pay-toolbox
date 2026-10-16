@@ -26,6 +26,10 @@ function isAnEmail(value: string): boolean {
   return rfc822Validator(value)
 }
 
+function isAlphanumeric(value: string): boolean {
+  return /^[a-z0-9]+$/i.test(value)
+}
+
 export async function searchPage(req: Request, res: Response): Promise<void> {
   res.render('transactions/search', { csrf: req.csrfToken() })
 }
@@ -33,56 +37,64 @@ export async function searchPage(req: Request, res: Response): Promise<void> {
 export async function search(req: Request, res: Response, next: NextFunction): Promise<void> {
   const id = req.body.id && req.body.id.trim()
 
-  try {
-    if (isAnEmail(id)) {
+  if (isAnEmail(id)) {
+    try {
       const emailSearch = await Ledger.transactions.list({
         override_account_id_restriction: true,
         email: id
       })
 
       if (emailSearch.results.length > 1) {
-        res.redirect(`/transactions?email=${id}`)
-        return
+        return res.redirect(`/transactions?email=${id}`)
+
       } else if (emailSearch.results.length === 1) {
-        res.redirect(`/transactions/${emailSearch.results[0].transaction_id}`)
-        return
+        return res.redirect(`/transactions/${emailSearch.results[0].transaction_id}`)
+
       }
-    } else {
+      return next(new EntityNotFoundError('Transaction search with criteria ', id))
+    } catch (error) {
+      return next(error)
+    }
+  }
+
+  if (isAlphanumeric(id)) {
+    try {
       await Ledger.transactions.retrieve(id)
-      res.redirect(`/transactions/${id}`)
+      return res.redirect(`/transactions/${id}`)
+    } catch (error) {
+      if (!(error instanceof EntityNotFoundError)) {
+        return next(error)
+      }
+    }
+  }
+
+  try {
+    const referenceSearch = await Ledger.transactions.list({
+      override_account_id_restriction: true,
+      reference: id
+    })
+
+    if (referenceSearch.results.length > 1) {
+      return res.redirect(`/transactions?reference=${id}`)
+    } else if (referenceSearch.results.length === 1) {
+      return res.redirect(`/transactions/${referenceSearch.results[0].transaction_id}`)
+    }
+
+    const gatewayTransactionIdSearch = await Ledger.transactions.list({
+      override_account_id_restriction: true,
+      gateway_transaction_id: id
+    })
+
+    if (gatewayTransactionIdSearch.results.length > 1) {
+      return res.redirect(`/transactions?gateway_transaction_id=${id}`)
+    } else if (gatewayTransactionIdSearch.results.length === 1) {
+      return res.redirect(`/transactions/${gatewayTransactionIdSearch.results[0].transaction_id}`)
     }
   } catch (error) {
-    if (error instanceof EntityNotFoundError) {
-      const referenceSearch = await Ledger.transactions.list({
-        override_account_id_restriction: true,
-        reference: id
-      })
-
-      if (referenceSearch.results.length > 1) {
-        res.redirect(`/transactions?reference=${id}`)
-        return
-      } else if (referenceSearch.results.length === 1) {
-        res.redirect(`/transactions/${referenceSearch.results[0].transaction_id}`)
-        return
-      }
-
-      const gatewayTransactionIdSearch = await Ledger.transactions.list({
-        override_account_id_restriction: true,
-        gateway_transaction_id: id
-      })
-      if (gatewayTransactionIdSearch.results.length > 1) {
-        res.redirect(`/transactions?gateway_transaction_id=${id}`)
-        return
-      } else if (gatewayTransactionIdSearch.results.length === 1) {
-        res.redirect(`/transactions/${gatewayTransactionIdSearch.results[0].transaction_id}`)
-        return
-      }
-
-      next(new EntityNotFoundError('Transaction search with criteria ', id))
-      return
-    }
-    next(error)
+    return next(error)
   }
+
+  return next(new EntityNotFoundError('Transaction search with criteria ', id))
 }
 
 export async function list(req: Request, res: Response, next: NextFunction): Promise<void> {
