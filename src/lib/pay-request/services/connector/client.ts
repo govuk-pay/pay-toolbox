@@ -241,6 +241,12 @@ export default class Connector extends Client {
             return client._axios
                 .post(`/v1/api/accounts/${id}/credentials`, params)
                 .then(response => client._unpackResponseData<GatewayAccountCredentials>(response));
+        },
+
+        createAdyenTestAccount(serviceId: string, params: CreateGatewayAccountRequest): Promise<CreateGatewayAccountResponse> {
+            return client._axios
+                .post(`/v1/api/service/${serviceId}/request-adyen-test-account`, params)
+                .then(response => client._unpackResponseData<CreateGatewayAccountResponse>(response))
         }
 
     }))(this)

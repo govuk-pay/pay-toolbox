@@ -1,0 +1,22 @@
+{% extends "layout/layout.njk" %}
+
+{% block main %}
+<h1 class="govuk-heading-m">Create Adyen Test Service</h1>
+
+<div>
+  <a href="/services/{{ serviceId }}" class="govuk-back-link">Back to service ({{ serviceId }})</a>
+</div>
+
+<p class="govuk-body">Are you sure you want to create an Adyen Test Service?</p>
+
+  <form method="POST" action="/services/{{ serviceId }}/create_adyen_test_service">
+    {{ govukButton({
+      text: "Create Adyen test service",
+      classes: "govuk-button--secondary"
+      })
+    }}
+
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+  </form>
+
+{% endblock %}

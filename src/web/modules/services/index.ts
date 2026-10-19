@@ -17,7 +17,9 @@ import {
   updateLinkAccounts,
   updateOrganisation,
   updateOrganisationForm,
-  goLive
+  goLive,
+  createAdyenTestService,
+  createAdyenTestServiceConfirmationPage
 } from './services.http'
 import { getUpdateFeatureForm, postUpdateFeatureForm } from './features/features.http'
 
@@ -47,5 +49,7 @@ export default {
   createWorldpayTestService: createWorldpayTestService,
   createWorldpayTestServiceConfirmationPage: createWorldpayTestServiceConfirmationPage,
   updateFeature: getUpdateFeatureForm,
-  updateFeatureForm: postUpdateFeatureForm
+  updateFeatureForm: postUpdateFeatureForm,
+  createAdyenTestService: createAdyenTestService,
+  createAdyenTestServiceConfirmationPage: createAdyenTestServiceConfirmationPage
 }

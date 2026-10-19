@@ -133,6 +133,8 @@ router.get('/services/:id/create_worldpay_test_service', auth.secured(Permission
 router.post('/services/:id/create_worldpay_test_service', auth.secured(PermissionLevel.USER_SUPPORT), services.createWorldpayTestService)
 router.get('/services/:id/features/:feature', auth.secured(PermissionLevel.USER_SUPPORT), services.updateFeature)
 router.post('/services/:id/features/:feature', auth.secured(PermissionLevel.USER_SUPPORT), services.updateFeatureForm)
+router.get('/services/:id/create_adyen_test_service', auth.secured(PermissionLevel.USER_SUPPORT), services.createAdyenTestServiceConfirmationPage)
+router.post('/services/:id/create_adyen_test_service', auth.secured(PermissionLevel.USER_SUPPORT), services.createAdyenTestService)
 
 router.get('/discrepancies/search', auth.secured(PermissionLevel.USER_SUPPORT), discrepancies.search)
 router.post('/discrepancies/search', auth.secured(PermissionLevel.USER_SUPPORT), discrepancies.getDiscrepancyReport)

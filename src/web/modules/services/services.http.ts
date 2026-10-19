@@ -15,7 +15,10 @@ import {formatServiceExportCsv} from './serviceExportCsv'
 import {BooleanFilterOption} from '../common/BooleanFilterOption'
 import {fetchAndFilterServices, getLiveNotArchivedServices, ServiceFilters} from './getFilteredServices'
 import {providers} from "../../../lib/providers";
-import {CreateGatewayAccountRequest} from "../../../lib/pay-request/services/connector/types";
+import {
+    CreateGatewayAccountRequest,
+    CreateGatewayAccountResponse, GatewayAccount
+} from "../../../lib/pay-request/services/connector/types";
 import {AccountType} from "../../../lib/pay-request/shared";
 import {TokenState} from "../../../lib/pay-request/services/public_auth/types";
 
@@ -75,7 +78,13 @@ const getServiceGatewayAccounts = async (gateway_account_ids: Array<string>) => 
   return serviceGatewayAccounts
 }
 
+function isATestServiceForPaymentProvider(serviceGatewayAccounts: GatewayAccount[], paymentProvider: string) {
+  return serviceGatewayAccounts.length === 1 && serviceGatewayAccounts[0].type === 'test' &&
+    serviceGatewayAccounts[0].payment_provider.toUpperCase() === paymentProvider.toUpperCase()
+}
+
 export async function detail(req: Request, res: Response, next: NextFunction): Promise<void> {
+
   try {
     const serviceId = req.params.id
     const messages = req.flash('info')
@@ -131,8 +140,9 @@ export async function detail(req: Request, res: Response, next: NextFunction): P
       misconfiguredServiceErrors,
       adminEmails,
       showWorldpayTestServiceCreatedSuccess: req.flash('worldpayTestService')[0] === 'success',
-      isWorldpayTestService: serviceGatewayAccounts.length === 1 && serviceGatewayAccounts[0].type === 'test' &&
-          serviceGatewayAccounts[0].payment_provider.toUpperCase() === 'WORLDPAY',
+      showAdyenTestServiceCreatedSuccess: req.flash('adyenTestService')[0] === 'success',
+      isWorldpayTestService: isATestServiceForPaymentProvider(serviceGatewayAccounts, 'worldpay'),
+      isAdyenTestService: isATestServiceForPaymentProvider(serviceGatewayAccounts, 'adyen'),
       hasStripeTestAccount: serviceGatewayAccounts.some(item => item.payment_provider === 'stripe')
     })
   } catch (error) {
@@ -448,48 +458,92 @@ export async function createWorldpayTestServiceConfirmationPage(
   res.render('services/create_worldpay_test_service', { serviceId, csrf: req.csrfToken() })
 }
 
+export async function createAdyenTestServiceConfirmationPage(
+    req: Request,
+    res: Response
+): Promise<void> {
+    const serviceId = req.params.id
+    res.render('services/create_adyen_test_service', {serviceId, csrf: req.csrfToken()})
+}
+
+export async function createAdyenTestService(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const newService: Service = await createTestService(req.params.id, 'adyen')
+
+        req.flash('adyenTestService', 'success')
+        res.redirect(`/services/${newService.external_id}`)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export async function createWorldpayTestService(
     req: Request,
     res: Response,
     next: NextFunction
-) : Promise<void> {
-  try {
-    const serviceId = req.params.id
-    const service = await AdminUsers.services.retrieve(serviceId)
-    const serviceForWorldpayTestGatewayAccount = await AdminUsers.services.create({
-      service_name: service.service_name
-    })
+): Promise<void> {
+    try {
+        const newService: Service = await createTestService(req.params.id, 'worldpay')
 
-    logger.info(`New Worldpay test service ${serviceForWorldpayTestGatewayAccount.external_id} created.`)
+        req.flash('worldpayTestService', 'success')
+        res.redirect(`/services/${newService.external_id}`)
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function createTestService(serviceId: string, newPaymentProvider: string): Promise<Service> {
+    const service = await AdminUsers.services.retrieve(serviceId)
+
+    const newServiceForTestGatewayAccount = await AdminUsers.services.create({
+        service_name: service.service_name
+    })
+    logger.info(`New ${newPaymentProvider} test service ${newServiceForTestGatewayAccount.external_id} created.`)
+
+    const createGatewayAccountResponse = await createTestGatewayAccount(serviceId,
+        service, newServiceForTestGatewayAccount, newPaymentProvider)
 
     const adminUsers = await AdminUsers.services.listUsers(serviceId, 'admin')
     for (const user of adminUsers) {
-      await AdminUsers.users.assignServiceAndRoleToUser(user.external_id, serviceForWorldpayTestGatewayAccount.external_id, 'admin');
-      logger.info(`Admin user ${user.external_id} assigned admin role to service ${serviceForWorldpayTestGatewayAccount.external_id}`)
+        await AdminUsers.users.assignServiceAndRoleToUser(user.external_id, newServiceForTestGatewayAccount.external_id, 'admin')
+        logger.info(`Admin user ${user.external_id} assigned admin role to service ${newServiceForTestGatewayAccount.external_id}`)
     }
-    const payload: CreateGatewayAccountRequest = {
-      payment_provider: 'worldpay',
-      description: `Worldpay test account spun off from service ${serviceId}`,
-      type: AccountType.Test,
-      service_name: service.service_name.en,
-      service_id: serviceForWorldpayTestGatewayAccount.external_id,
-      send_payer_email_to_gateway: true,
-      send_payer_ip_address_to_gateway: true
-    }
-    const createGatewayAccountResponse = await Connector.accounts.create(payload)
 
-    logger.info(`Worldpay test gateway account ${createGatewayAccountResponse.gateway_account_id} created.`)
+    const updateResponse = await AdminUsers.services.update(newServiceForTestGatewayAccount.external_id,
+        {gateway_account_ids: [createGatewayAccountResponse.gateway_account_id]})
 
-    const updateResponse = await AdminUsers.services.update(serviceForWorldpayTestGatewayAccount.external_id,
-        { gateway_account_ids: [createGatewayAccountResponse.gateway_account_id] })
-
-    logger.info(`Worldpay test service ${updateResponse.service_name} with id ${updateResponse.external_id} 
+    logger.info(`Test service ${updateResponse.service_name} with id ${updateResponse.external_id} 
       linked with gateway account ids ${updateResponse.gateway_account_ids}.`)
 
-    req.flash('worldpayTestService', 'success')
-    res.redirect(`/services/${serviceForWorldpayTestGatewayAccount.external_id}`)
-  } catch (error) {
-    next(error)
-  }
+    return newServiceForTestGatewayAccount
+}
+
+async function createTestGatewayAccount(serviceId: string, service: Service,
+                                        newServiceForTestGatewayAccount: Service,
+                                        paymentProvider: string): Promise<CreateGatewayAccountResponse> {
+    const payload: CreateGatewayAccountRequest = {
+        payment_provider: paymentProvider,
+        description: `${paymentProvider.toUpperCase()} Test account spun off from service ${serviceId}`,
+        type: AccountType.Test,
+        service_name: `${service.service_name.en} - Adyen test service`,
+        service_id: newServiceForTestGatewayAccount.external_id,
+        send_payer_email_to_gateway: true,
+        send_payer_ip_address_to_gateway: true
+    }
+
+    let createGatewayAccountResponse: CreateGatewayAccountResponse
+
+    if (paymentProvider === 'adyen') {
+        createGatewayAccountResponse = await Connector.accounts.createAdyenTestAccount(newServiceForTestGatewayAccount.external_id, payload)
+    } else {
+        createGatewayAccountResponse = await Connector.accounts.create(payload)
+    }
+
+    logger.info(`${paymentProvider.toUpperCase()} test gateway account ${createGatewayAccountResponse.gateway_account_id} created.`)
+    return createGatewayAccountResponse
 }
 
