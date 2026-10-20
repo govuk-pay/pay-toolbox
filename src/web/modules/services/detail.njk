@@ -19,6 +19,18 @@
     }) }}
   {% endif %}
 
+  {% if showAdyenTestServiceCreatedSuccess %}
+    {% set html %}
+      <p class="govuk-notification-banner__heading">
+        Adyen test service was created successfully.
+      </p>
+    {% endset %}
+    {{ govukNotificationBanner({
+      html: html,
+      type: 'success'
+    }) }}
+  {% endif %}
+
   <span class="govuk-caption-m">{{ service.name }}</span>
   <h1 class="govuk-heading-m">Service details</h1>
 
@@ -176,6 +188,19 @@
         text: "Go live",
         href: "/services/" + serviceId + "/go_live"
         }) }}
+    </div>
+  {% endif %}
+
+  {% if not isAdyenTestService%}
+    <div>
+      <h2 class="govuk-heading-m">Create Adyen test service</h2>
+      <p class="govuk-body">Spin off a separate service that will contain an Adyen test account.</p>
+
+      {{ govukButton({
+        text: "Create Adyen test service",
+        classes: "govuk-button--secondary",
+        href: "/services/" + serviceId + "/create_adyen_test_service"
+      }) }}
     </div>
   {% endif %}
 
