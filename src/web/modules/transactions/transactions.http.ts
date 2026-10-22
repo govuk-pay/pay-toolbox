@@ -58,13 +58,15 @@ export async function search(req: Request, res: Response, next: NextFunction): P
   }
 
   if (isAlphanumeric(id)) {
-    try {
-      await Ledger.transactions.retrieve(id)
-      return res.redirect(`/transactions/${id}`)
-    } catch (error) {
-      if (!(error instanceof EntityNotFoundError)) {
-        return next(error)
+    const transaction = await Ledger.transactions.retrieve(id).catch((error) => {
+      if (error instanceof EntityNotFoundError) {
+        return null
       }
+      return next(error)
+    })
+
+    if (transaction) {
+      return res.redirect(`/transactions/${id}`)
     }
   }
 

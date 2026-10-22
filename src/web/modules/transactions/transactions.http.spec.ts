@@ -15,7 +15,7 @@ function givenLedgerSearchWillReturnResults(...results: any[]) {
 
 function givenTransactionDoesNotExist() {
   const error = new EntityNotFoundError('Transaction does not exist', 'an-identifier')
-  sinon.replace(Ledger.transactions, 'retrieve', sinon.fake.throws(error))
+  sinon.replace(Ledger.transactions, 'retrieve', sinon.fake.rejects(error))
 }
 
 function givenReferenceSearchFailsAndGatewayReturns(...results: any[]) {
@@ -125,11 +125,11 @@ describe('Transaction search', () => {
         givenTransactionDoesNotExist()
       })
 
-      it('searches for transactions by reference', () => {
+      it('searches for transactions by reference', async () => {
         const listSpy = sinon.fake()
         sinon.replace(Ledger.transactions, 'list', listSpy)
 
-        search(request, response, nextSpy)
+        await search(request, response, nextSpy)
 
         sinon.assert.calledOnceWithMatch(listSpy, { reference: id })
       })
