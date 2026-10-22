@@ -3,8 +3,8 @@
   "version": "0.3.0",
   "description": "Internal administrative tools service for the GOV.UK Pay products.",
   "engines": {
-    "node": "^22.22.0",
-    "npm": "^11.18.0"
+    "node": "^24.22.1",
+    "npm": "^11.19.1"
   },
   "private": true,
   "main": "dist/index.js",
@@ -31,8 +31,8 @@
   "dependencies": {
     "@aws-sdk/client-ecs": "~3.975.0",
     "@aws-sdk/client-s3": "~3.1027.0",
-    "@govuk-pay/pay-js-commons": "^7.0.71",
-    "@govuk-pay/pay-js-metrics": "^2.0.7",
+    "@govuk-pay/pay-js-commons": "^7.0.95",
+    "@govuk-pay/pay-js-metrics": "^2.0.17",
     "@octokit/auth-app": "^8.2.0",
     "@octokit/core": "^7.0.6",
     "@sentry/node": "^6.12.0",
