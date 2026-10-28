@@ -525,11 +525,21 @@ async function createTestService(serviceId: string, newPaymentProvider: string):
 async function createTestGatewayAccount(serviceId: string, service: Service,
                                         newServiceForTestGatewayAccount: Service,
                                         paymentProvider: string): Promise<CreateGatewayAccountResponse> {
+    let humanReadablePaymentProvider = paymentProvider.toUpperCase()
+    if (paymentProvider === 'adyen') {
+      humanReadablePaymentProvider = 'Adyen'
+    } else if (paymentProvider === 'worldpay') {
+      humanReadablePaymentProvider = 'Worldpay'
+    }
+
+    const newServiceName = `${humanReadablePaymentProvider} test service - ${service.service_name.en}`
+    const truncatedNewServiceName = newServiceName.substring(0, 50)
+
     const payload: CreateGatewayAccountRequest = {
         payment_provider: paymentProvider,
-        description: `${paymentProvider.toUpperCase()} Test account spun off from service ${serviceId}`,
+        description: `${humanReadablePaymentProvider} Test account spun off from service ${serviceId}`,
         type: AccountType.Test,
-        service_name: `${service.service_name.en} - Adyen test service`,
+        service_name: truncatedNewServiceName,
         service_id: newServiceForTestGatewayAccount.external_id,
         send_payer_email_to_gateway: true,
         send_payer_ip_address_to_gateway: true
