@@ -682,7 +682,7 @@ async function updateGatewayPaymentData(req: Request, res: Response): Promise<vo
     await Connector.accounts.update(id, {send_payer_ip_address_to_gateway: sendIp})
   }
 
-  req.flash('info', 'Payment details sent to Worldpay updated')
+  req.flash('info', 'Payment details sent to gateway updated')
   res.redirect(`/gateway_accounts/${id}`)
 }
 

@@ -191,13 +191,15 @@
         </div>
       {% elif account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' %}
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Payment details sent to Worldpay or Adyen</span></dt>
+          <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Payment details sent to {{ account.payment_provider | capitalize }}</span></dt>
           <dd class="govuk-summary-list__value">
             <ul class="govuk-list">
-              {% if account.payment_provider === 'worldpay' and account.send_reference_to_gateway === true %}
-                <li>Reference</li>
-              {% else %}
-                <li>Payment description</li>
+              {% if account.payment_provider === 'worldpay' %}
+                {% if account.send_reference_to_gateway === true %}
+                  <li>Reference</li>
+                {% else %}
+                  <li>Payment description</li>
+                {% endif %}
               {% endif %}
               {% if account.send_payer_email_to_gateway === true %}
                 <li>Email</li>
@@ -208,7 +210,7 @@
             </ul>
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/gateway_payment_data">Manage<span class="govuk-visually-hidden"> payment details sent to Worldpay or Adyen</span></a>
+            <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/gateway_payment_data">Manage<span class="govuk-visually-hidden"> payment details sent to {{ account.payment_provider | capitalize }}</span></a>
           </dd>
         </div>
         {% if is3DSFlexApplicable %}

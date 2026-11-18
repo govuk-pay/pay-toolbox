@@ -5,13 +5,13 @@
 {% set isTestData = account and not (account.type === "live") %}
 
 {% block main %}
-  <h1 class="govuk-heading-m">Manage payment details sent to Worldpay or Adyen</h1>
+  <h1 class="govuk-heading-m">Manage payment details sent to {{ account.payment_provider | capitalize }}</h1>
 
   <div>
     <a href="/gateway_accounts/{{ account.gateway_account_id }}" class="govuk-back-link">Gateway account ({{ account.gateway_account_id }})</a>
   </div>
 
-  <p class="govuk-body">We can customise the payment details that we send to Worldpay or Adyen in payment authorisation requests.</p>
+  <p class="govuk-body">We can customise the payment details that we send to {{ account.payment_provider | capitalize }} in payment authorisation requests.</p>
 
   <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/gateway_payment_data">
 
