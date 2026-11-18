@@ -15,7 +15,7 @@
 
   <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/gateway_payment_data">
 
-    {% if account.payment_provider === 'worldpay' }
+    {% if account.payment_provider === 'worldpay' %}
       {{ govukRadios({
         classes: "govuk-radios--inline",
         name: "description",
