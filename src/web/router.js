@@ -96,8 +96,8 @@ router.get('/gateway_accounts/:id/stripe_statement_descriptor', auth.secured(Per
 router.post('/gateway_accounts/:id/stripe_statement_descriptor', auth.secured(PermissionLevel.USER_SUPPORT), gatewayAccounts.updateStripeStatementDescriptor)
 router.get('/gateway_accounts/:id/stripe_payout_descriptor', auth.secured(PermissionLevel.VIEW_ONLY), gatewayAccounts.updateStripePayoutDescriptorPage)
 router.post('/gateway_accounts/:id/stripe_payout_descriptor', auth.secured(PermissionLevel.USER_SUPPORT), gatewayAccounts.updateStripePayoutDescriptor)
-router.get('/gateway_accounts/:id/worldpay_payment_data', auth.secured(PermissionLevel.VIEW_ONLY), gatewayAccounts.worldpayPaymentData)
-router.post('/gateway_accounts/:id/worldpay_payment_data', auth.secured(PermissionLevel.USER_SUPPORT), gatewayAccounts.updateWorldpayPaymentData)
+router.get('/gateway_accounts/:id/gateway_payment_data', auth.secured(PermissionLevel.VIEW_ONLY), gatewayAccounts.gatewayPaymentData)
+router.post('/gateway_accounts/:id/gateway_payment_data', auth.secured(PermissionLevel.USER_SUPPORT), gatewayAccounts.updateGatewayPaymentData)
 router.get('/gateway_accounts/:id/switch_psp', auth.secured(PermissionLevel.VIEW_ONLY), switchPSP.switchPSPPage)
 router.post('/gateway_accounts/:id/switch_psp', auth.secured(PermissionLevel.USER_SUPPORT), switchPSP.postSwitchPSP)
 

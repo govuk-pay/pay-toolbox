@@ -5,49 +5,51 @@
 {% set isTestData = account and not (account.type === "live") %}
 
 {% block main %}
-  <h1 class="govuk-heading-m">Manage payment details sent to Worldpay</h1>
+  <h1 class="govuk-heading-m">Manage payment details sent to Worldpay or Adyen</h1>
 
   <div>
     <a href="/gateway_accounts/{{ account.gateway_account_id }}" class="govuk-back-link">Gateway account ({{ account.gateway_account_id }})</a>
   </div>
 
-  <p class="govuk-body">We can customise the payment details that we send to Worldpay in payment authorisation requests.</p>
+  <p class="govuk-body">We can customise the payment details that we send to Worldpay or Adyen in payment authorisation requests.</p>
 
-  <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/worldpay_payment_data">
+  <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/gateway_payment_data">
 
-    {{ govukRadios({
-      classes: "govuk-radios--inline",
-      name: "description",
-      fieldset: {
-        legend: {
-          text: "What should we sent to Worldpay in the description field?",
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--s"
-        }
-      },
-      hint: {
-        text: "We can send either the payment reference or payment description"
-      },
-      items: [
-        {
-          value: "description",
-          text: "Description",
-          checked: not account.send_reference_to_gateway
+    {% if account.payment_provider === 'worldpay' }
+      {{ govukRadios({
+        classes: "govuk-radios--inline",
+        name: "description",
+        fieldset: {
+          legend: {
+            text: "What should we sent to Worldpay in the description field?",
+            isPageHeading: true,
+            classes: "govuk-fieldset__legend--s"
+          }
         },
-        {
-          value: "reference",
-          text: "Reference",
-          checked: account.send_reference_to_gateway
-        }
-      ]
-    }) }}
+        hint: {
+          text: "We can send either the payment reference or payment description"
+        },
+        items: [
+          {
+            value: "description",
+            text: "Description",
+            checked: not account.send_reference_to_gateway
+          },
+          {
+            value: "reference",
+            text: "Reference",
+            checked: account.send_reference_to_gateway
+          }
+        ]
+      }) }}
+    {% endif %}
 
     {{ govukRadios({
       classes: "govuk-radios--inline",
       name: "email",
       fieldset: {
         legend: {
-          text: "Should we send the payer's email address?",
+          text: "Should we send the payer’s email address?",
           isPageHeading: true,
           classes: "govuk-fieldset__legend--s"
         }
@@ -71,7 +73,7 @@
       name: "ip",
       fieldset: {
         legend: {
-          text: "Should we send the payer's IP address?",
+          text: "Should we send the payer’s IP address?",
           isPageHeading: true,
           classes: "govuk-fieldset__legend--s"
         }

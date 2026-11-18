@@ -656,23 +656,31 @@ async function searchRequest(req: Request, res: Response, next: NextFunction): P
   }
 }
 
-async function worldpayPaymentData(req: Request, res: Response): Promise<void> {
+async function gatewayPaymentData(req: Request, res: Response): Promise<void> {
   const {id} = req.params
   const account = await Connector.accounts.retrieve(id)
-  res.render('gateway_accounts/worldpay_payment_data', {
+  res.render('gateway_accounts/gateway_payment_data', {
     account,
     csrf: req.csrfToken()
   })
 }
 
-async function updateWorldpayPaymentData(req: Request, res: Response): Promise<void> {
+async function updateGatewayPaymentData(req: Request, res: Response): Promise<void> {
   const {id} = req.params
-  const sendReferenceInDescription = req.body.description === 'reference'
-  const sendEmail = req.body.email === 'yes'
-  const sendIp = req.body.ip === 'yes'
-  await Connector.accounts.update(id, {send_reference_to_gateway: sendReferenceInDescription})
-  await Connector.accounts.update(id, {send_payer_email_to_gateway: sendEmail})
-  await Connector.accounts.update(id, {send_payer_ip_address_to_gateway: sendIp})
+  if (req.body.description) {
+    const sendReferenceInDescription = req.body.description === 'reference'
+    await Connector.accounts.update(id, {send_reference_to_gateway: sendReferenceInDescription})
+  }
+
+  if (req.body.email) {
+    const sendEmail = req.body.email === 'yes'
+    await Connector.accounts.update(id, {send_payer_email_to_gateway: sendEmail})
+  }
+
+  if (req.body.ip) {
+    const sendIp = req.body.ip === 'yes'
+    await Connector.accounts.update(id, {send_payer_ip_address_to_gateway: sendIp})
+  }
 
   req.flash('info', 'Payment details sent to Worldpay updated')
   res.redirect(`/gateway_accounts/${id}`)
@@ -710,6 +718,6 @@ export default {
   updateWorldpayCorporateExemptions: wrapAsyncErrorHandler(updateWorldpayCorporateExemptions),
   recurringPayments: wrapAsyncErrorHandler(recurringPayments),
   updateRecurringPayments: wrapAsyncErrorHandler(updateRecurringPayments),
-  worldpayPaymentData: wrapAsyncErrorHandler(worldpayPaymentData),
-  updateWorldpayPaymentData: wrapAsyncErrorHandler(updateWorldpayPaymentData)
+  gatewayPaymentData: wrapAsyncErrorHandler(gatewayPaymentData),
+  updateGatewayPaymentData: wrapAsyncErrorHandler(updateGatewayPaymentData)
 }
