@@ -189,9 +189,12 @@
             <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/stripe_payout_descriptor">Manage<span class="govuk-visually-hidden"> Stripe payouts statement descriptor</span></a>
           </dd>
         </div>
-      {% elif account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' %}
+      {% elif account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' or account.payment_provider === 'stripe' %}
+        {% set payment_provider_but_stripe_is_adyen %}
+          {{ 'adyen' if account.payment_provider === 'stripe' else account.payment_provider }}
+        {% endset %}
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Payment details sent to {{ account.payment_provider | capitalize }}</span></dt>
+          <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Payment details sent to {{ payment_provider_but_stripe_is_adyen | capitalize }}</span></dt>
           <dd class="govuk-summary-list__value">
             <ul class="govuk-list">
               {% if account.payment_provider === 'worldpay' %}
