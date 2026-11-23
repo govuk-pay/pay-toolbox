@@ -4,14 +4,22 @@
 
 {% set isTestData = account and not (account.type === "live") %}
 
+{% set payment_provider_but_stripe_is_adyen %}
+  {{ 'adyen' if account.payment_provider === 'stripe' else account.payment_provider }}
+{% endset %}
+
 {% block main %}
-  <h1 class="govuk-heading-m">Manage payment details sent to {{ account.payment_provider | capitalize }}</h1>
+  <h1 class="govuk-heading-m">Manage payment details sent to {{ payment_provider_but_stripe_is_adyen | capitalize }}</h1>
 
   <div>
     <a href="/gateway_accounts/{{ account.gateway_account_id }}" class="govuk-back-link">Gateway account ({{ account.gateway_account_id }})</a>
   </div>
 
-  <p class="govuk-body">We can customise the payment details that we send to {{ account.payment_provider | capitalize }} in payment authorisation requests.</p>
+  <p class="govuk-body">We can customise the payment details that we send to {{ payment_provider_but_stripe_is_adyen | capitalize }} in payment authorisation requests.</p>
+
+  {% if account.payment_provider === 'stripe' %}
+    <p class="govuk-body">This will not affect the data sent to Stripe now, only the data sent to Adyen after migration.</p>
+  {% endif %}
 
   <form method="POST" action="/gateway_accounts/{{ account.gateway_account_id }}/gateway_payment_data">
 
