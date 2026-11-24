@@ -191,9 +191,7 @@
         </div>
       {% endif %}
       {% if account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' or account.payment_provider === 'stripe' %}
-        {% set payment_provider_but_stripe_is_adyen %}
-          {{ 'adyen' if account.payment_provider === 'stripe' else account.payment_provider }}
-        {% endset %}
+        {% set payment_provider_but_stripe_is_adyen = 'adyen' if account.payment_provider === 'stripe' else account.payment_provider %}
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key"><span class="govuk-caption-m">Payment details sent to {{ payment_provider_but_stripe_is_adyen | capitalize }}</span></dt>
           <dd class="govuk-summary-list__value">

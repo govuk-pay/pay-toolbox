@@ -4,9 +4,8 @@
 
 {% set isTestData = account and not (account.type === "live") %}
 
-{% set payment_provider_but_stripe_is_adyen %}
-  {{ 'adyen' if account.payment_provider === 'stripe' else account.payment_provider }}
-{% endset %}
+{% set payment_provider_but_stripe_is_adyen = 'adyen' if account.payment_provider === 'stripe' else account.payment_provider %}
+
 
 {% block main %}
   <h1 class="govuk-heading-m">Manage payment details sent to {{ payment_provider_but_stripe_is_adyen | capitalize }}</h1>
