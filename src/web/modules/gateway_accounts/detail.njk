@@ -189,7 +189,8 @@
             <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/stripe_payout_descriptor">Manage<span class="govuk-visually-hidden"> Stripe payouts statement descriptor</span></a>
           </dd>
         </div>
-      {% elif account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' or account.payment_provider === 'stripe' %}
+      {% endif %}
+      {% if account.payment_provider === 'worldpay' or account.payment_provider === 'adyen' or account.payment_provider === 'stripe' %}
         {% set payment_provider_but_stripe_is_adyen %}
           {{ 'adyen' if account.payment_provider === 'stripe' else account.payment_provider }}
         {% endset %}
@@ -216,6 +217,8 @@
             <a class="govuk-link" href="/gateway_accounts/{{ gatewayAccountId }}/gateway_payment_data">Manage<span class="govuk-visually-hidden"> payment details sent to {{ account.payment_provider | capitalize }}</span></a>
           </dd>
         </div>
+      {% endif %}
+      {% if account.payment_provider === 'worldpay' %}
         {% if is3DSFlexApplicable %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key"><span class="govuk-caption-m">3DS Flex</span></dt>
